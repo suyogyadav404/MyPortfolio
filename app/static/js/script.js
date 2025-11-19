@@ -2,14 +2,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     const formMessage = document.getElementById('formMessage');
 
+    if (!contactForm) {
+        console.warn('Contact form not found');
+        return;
+    }
+
     contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        // Validation
+        if (!name || !email || !message) {
+            showMessage('error', 'Please fill in all fields');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
 
         try {
+            console.log('Sending contact form:', {name, email});
             const response = await fetch('/contact', {
                 method: 'POST',
                 headers: {
@@ -22,21 +40,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
 
+            console.log('Response status:', response.status, 'OK:', response.ok);
             const data = await response.json();
+            console.log('Response data:', data);
 
-            if (data.success) {
-                formMessage.className = 'form-message success';
-                formMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+            if (data.success === true) {
+                showMessage('success', data.message || 'Message sent successfully!');
                 contactForm.reset();
+                // Clear message after 5 seconds
+                setTimeout(() => {
+                    formMessage.style.display = 'none';
+                }, 5000);
             } else {
-                formMessage.className = 'form-message error';
-                formMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.error}`;
+                showMessage('error', data.error || data.message || 'Failed to send message');
             }
         } catch (error) {
-            formMessage.className = 'form-message error';
-            formMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> An error occurred. Please try again.`;
+            console.error('Contact form error:', error);
+            showMessage('error', 'Network error. Please try again later.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }
     });
+
+    function showMessage(type, text) {
+        formMessage.className = `form-message ${type}`;
+        formMessage.innerHTML = text;
+        formMessage.style.display = 'block';
+    }
 
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

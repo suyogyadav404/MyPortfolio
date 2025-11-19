@@ -72,18 +72,25 @@ def contact():
         
         if not mail_username or not mail_password:
             # Email not configured, just log the message
-            print(f"Contact message from {name} ({email}): {message}")
-            return jsonify({'success': True, 'message': 'Message received!'}), 200
+            print(f"[CONTACT] Email not configured. Message from {name} ({email}): {message}")
+            return jsonify({'success': True, 'message': 'Message received! (Email not configured, but your message was logged)'}), 200
         
-        # Send email
-        msg = Message(
-            subject=f'New Contact from {name}',
-            recipients=[mail_username],
-            body=f'Name: {name}\nEmail: {email}\n\nMessage:\n{message}'
-        )
-        mail.send(msg)
-        
-        return jsonify({'success': True, 'message': 'Message sent successfully!'})
+        try:
+            # Send email
+            msg = Message(
+                subject=f'New Contact from {name}',
+                recipients=[mail_username],
+                body=f'Name: {name}\nEmail: {email}\n\nMessage:\n{message}'
+            )
+            mail.send(msg)
+            print(f"[CONTACT] Email sent successfully from {name} ({email})")
+            return jsonify({'success': True, 'message': 'Message sent successfully!'}), 200
+        except Exception as email_error:
+            print(f"[CONTACT] Email send failed: {str(email_error)}")
+            print(f"[CONTACT] Message logged (email failed) from {name} ({email}): {message}")
+            return jsonify({'success': True, 'message': 'Message received! (There was an issue sending the email, but your message was logged)'}), 200
     except Exception as e:
-        print(f"Contact form error: {str(e)}")
-        return jsonify({'success': False, 'error': 'Error sending message. Please try again.'}), 500
+        print(f"[CONTACT] Contact form error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'An unexpected error occurred. Please try again.'}), 500
