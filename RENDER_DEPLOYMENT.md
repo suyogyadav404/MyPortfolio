@@ -39,7 +39,7 @@ Fill in these fields:
 - [ ] **Region**: Choose closest to you
 - [ ] **Branch**: main
 - [ ] **Build Command**: `pip install -r requirements.txt`
-- [ ] **Start Command**: `gunicorn run:app`
+- [ ] **Start Command**: `gunicorn --bind 0.0.0.0:$PORT --workers 2 run:app`
 - [ ] **Instance Type**: Free (under $0.01/month)
 
 ### Step 4: Add Environment Variables
