@@ -31,7 +31,7 @@ On the next page, fill in:
 - [ ] **Region**: Choose closest (US or Europe)
 - [ ] **Branch**: main
 - [ ] **Build Command**: `pip install -r requirements.txt`
-- [ ] **Start Command**: `gunicorn --bind 0.0.0.0:$PORT --workers 2 run:app`
+- [ ] **Start Command**: `gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 run:app`
 - [ ] Leave **Instance Type** as Free
 
 ### Step 4: Add Email Variables (1/3)

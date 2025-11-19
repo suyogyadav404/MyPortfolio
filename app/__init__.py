@@ -24,10 +24,6 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@portfolio.com')
     
-    # Debug: Check if email credentials are loaded
-    print(f"Email Username: {app.config['MAIL_USERNAME']}")
-    print(f"Email Password: {'***' if app.config['MAIL_PASSWORD'] else 'Not Set'}")
-    
     mail.init_app(app)
     
     # Register blueprints
