@@ -1,0 +1,21 @@
+# Fly.io configuration for Portfolio
+app = "suyog-portfolio"
+primary_region = "iad"
+
+[build]
+builder = "paketobuildpacks"
+
+[env]
+PORT = "8080"
+
+[http_service]
+internal_port = 8080
+force_https = true
+auto_stop_machines = true
+auto_start_machines = true
+processes = ["app"]
+
+[[vm]]
+cpu_kind = "shared"
+cpus = 1
+memory_mb = 256
