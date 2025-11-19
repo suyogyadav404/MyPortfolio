@@ -1,7 +1,0 @@
-.git/
-.venv/
-deploy.bat
-deploy.py
-push.ps1
-__pycache__/
-*.pyc
