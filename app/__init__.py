@@ -11,7 +11,10 @@ load_dotenv(env_path)
 mail = Mail()
 
 def create_app():
-    app = Flask(__name__)
+    # Create Flask app with explicit static folder path
+    import os
+    static_folder = os.path.join(os.path.dirname(__file__), 'static')
+    app = Flask(__name__, static_folder=static_folder, static_url_path='/static')
     
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')

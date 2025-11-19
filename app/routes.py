@@ -56,27 +56,34 @@ def home():
 def contact():
     try:
         data = request.get_json()
-        name = data.get('name')
-        email = data.get('email')
-        message = data.get('message')
+        if not data:
+            return jsonify({'success': False, 'error': 'Invalid request'}), 400
+            
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        message = data.get('message', '').strip()
         
         if not all([name, email, message]):
             return jsonify({'success': False, 'error': 'All fields are required'}), 400
         
         # Check if email is configured
-        if not os.getenv('MAIL_USERNAME') or not os.getenv('MAIL_PASSWORD'):
+        mail_username = os.getenv('MAIL_USERNAME')
+        mail_password = os.getenv('MAIL_PASSWORD')
+        
+        if not mail_username or not mail_password:
             # Email not configured, just log the message
             print(f"Contact message from {name} ({email}): {message}")
-            return jsonify({'success': True, 'message': 'Message received! (Email service not configured yet - check terminal for your message)'}), 200
+            return jsonify({'success': True, 'message': 'Message received!'}), 200
         
         # Send email
         msg = Message(
             subject=f'New Contact from {name}',
-            recipients=[os.getenv('MAIL_USERNAME', 'your-email@gmail.com')],
+            recipients=[mail_username],
             body=f'Name: {name}\nEmail: {email}\n\nMessage:\n{message}'
         )
         mail.send(msg)
         
         return jsonify({'success': True, 'message': 'Message sent successfully!'})
     except Exception as e:
-        return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
+        print(f"Contact form error: {str(e)}")
+        return jsonify({'success': False, 'error': 'Error sending message. Please try again.'}), 500
