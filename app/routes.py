@@ -1,4 +1,5 @@
 import os
+import traceback
 from flask import Blueprint, render_template, request, jsonify
 from flask_mail import Message
 from app import mail
@@ -52,6 +53,15 @@ SKILLS = {
 def home():
     return render_template('index.html', projects=PROJECTS, skills=SKILLS)
 
+@main_bp.route('/health')
+def health():
+    import sys
+    return jsonify({
+        'status': 'ok',
+        'static_folder': os.path.dirname(os.path.abspath(__file__)) + '/static',
+        'python': sys.version
+    })
+
 @main_bp.route('/contact', methods=['POST'])
 def contact():
     try:
@@ -91,6 +101,5 @@ def contact():
             return jsonify({'success': True, 'message': 'Message received! (There was an issue sending the email, but your message was logged)'}), 200
     except Exception as e:
         print(f"[CONTACT] Contact form error: {str(e)}")
-        import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': 'An unexpected error occurred. Please try again.'}), 500
